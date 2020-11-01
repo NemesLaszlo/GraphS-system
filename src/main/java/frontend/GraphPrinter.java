@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 public class GraphPrinter extends JApplet {
 
-    private final Dimension DEFAULT_SIZE = new Dimension(530, 320);
+    private final Dimension DEFAULT_SIZE = new Dimension(1280, 720);
     private JGraphXAdapter<CustomVertex, CustomEdge> jgxAdapter;
     private mxGraphComponent component;
     private Object[] cells;
@@ -26,8 +26,12 @@ public class GraphPrinter extends JApplet {
     /**
      * GraphPrinter Constructor
      */
-    public GraphPrinter(){
+    public GraphPrinter(Graph g){
+        this.g = g;
+    }
 
+    public void setG(Graph<CustomVertex, CustomEdge> g) {
+        this.g = g;
     }
 
     /**
@@ -37,20 +41,22 @@ public class GraphPrinter extends JApplet {
      */
     public void SimulationInit(Simulator simulator, int numberOfNodes)
     {
-        simulator.createDynamicGraph(numberOfNodes);
-        regenerateGraphVisual(simulator);
+        //simulator.createDynamicGraph(numberOfNodes);
+//        regenerateGraphVisual(simulator);
     }
 
     /**
      * Basic graph visualization with coloring and positioning.
      * @param simulator - Simulator object with the simulation methods.
      */
-    void regenerateGraphVisual(Simulator simulator) {
-        g = simulator.getGraph();
-
+    void regenerateGraphVisual() {
         // create a visualization using JGraph, via an adapter
+
         jgxAdapter = new JGraphXAdapter<CustomVertex, CustomEdge>(g);
         component = new mxGraphComponent(jgxAdapter);
+
+        jgxAdapter.refresh();
+
 
         // get all cells and edges
         cells = jgxAdapter.getChildVertices(jgxAdapter.getDefaultParent());

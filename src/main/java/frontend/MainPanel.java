@@ -1,6 +1,7 @@
 package frontend;
 
 import backend.Simulator;
+import org.jgrapht.Graph;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,12 +12,14 @@ public class MainPanel {
 
     private JFrame frame;
     private JPanel jpMain;
-    private JPanel jpGraph;
+    private JPanel jpGraphBasic;
+    private JPanel jpGraphReverse;
+    private JPanel jpGraphHotpoint;
     private JPanel jpContorls;
     private Simulator simulator;
     private GraphPrinter graphPrinter;
     private String graphType;
-    private int startNodeNum = 7;
+    private int startNodeNum = 30;
     private boolean showEdges = true;
     private boolean autoTurnedOn = false;
     private ActionListener timerAL;
@@ -25,10 +28,12 @@ public class MainPanel {
     public MainPanel() {
         frame = new JFrame();
         jpMain = new JPanel();
-        jpGraph = new JPanel();
+        jpGraphBasic = new JPanel();
+        jpGraphReverse = new JPanel();
+        jpGraphHotpoint = new JPanel();
         jpContorls = new JPanel();
-        simulator = new Simulator();
-        graphPrinter = new GraphPrinter();
+        simulator = new Simulator(startNodeNum);
+        graphPrinter = new GraphPrinter(simulator.getGraph());
     }
 
     public void interfaceVisualization() {
@@ -46,7 +51,9 @@ public class MainPanel {
                 int newValInteger = Integer.parseInt(newValString);
 
                 startNodeNum = newValInteger;
-                graphPrinter.SimulationInit(simulator, startNodeNum);
+                simulator.createDynamicGraph(newValInteger);
+                graphPrinter.setG(simulator.getGraph());
+                //graphPrinter.SimulationInit(simulator, startNodeNum);
                 rePaintGraph();
             }
         });
@@ -106,8 +113,16 @@ public class MainPanel {
         edges.setSelected(showEdges);
 
         // Graph
-        jpMain.add(jpGraph);
+//        jpMain.add(jpGraph);
 
+        JTabbedPane tabbedPane = new JTabbedPane();
+//        jpGraph.setPreferredSize(new Dimension(400,400));
+//        tabbedPane.setBounds(0,0,400,400);
+        tabbedPane.addTab("Basic", jpGraphBasic);
+        tabbedPane.addTab("Reverse", jpGraphReverse);
+        tabbedPane.addTab("Hotpoint", jpGraphHotpoint);
+
+        jpMain.add(tabbedPane);
         //Contorls
         jpContorls.add(new Label("Nodes count:"));
         jpContorls.add(nodesSpinner);
@@ -126,25 +141,31 @@ public class MainPanel {
         frame.setVisible(true);
     }
 
-    private void rePaintGraph(){
-
-        graphPrinter = new GraphPrinter();
-        graphPrinter.regenerateGraphVisual(simulator);
+    private void genGraphPrinter(Graph g, JPanel panel) {
+        graphPrinter = new GraphPrinter(g);
+        graphPrinter.regenerateGraphVisual();
 
         graphPrinter.repaint();
         graphPrinter.getContentPane().repaint();
 
-        jpGraph.removeAll();
-        jpGraph.add(graphPrinter);
+        panel.removeAll();
+        panel.add(graphPrinter);
 
-        frame.repaint();
+        panel.repaint();
+        panel.revalidate();
+    }
+
+    private void rePaintGraph(){
+
+        genGraphPrinter(simulator.getGraph(), jpGraphBasic);
+        genGraphPrinter(simulator.getGraphRev(), jpGraphReverse);
+        genGraphPrinter(simulator.getGraphHotpoint(), jpGraphHotpoint);
+
 
         jpMain.repaint();
         jpMain.revalidate();
 
-        jpGraph.repaint();
-        jpGraph.revalidate();
-
+        frame.repaint();
         frame.pack();
 
         graphPrinter.enableEdges(showEdges);

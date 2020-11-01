@@ -8,13 +8,6 @@ import java.lang.reflect.Array;
 import java.util.*;
 
 public class GraphGenerator {
-
-    private long actualTimeStamp;
-
-    public GraphGenerator(long actualTime) {
-        this.actualTimeStamp = actualTime;
-    }
-
     /**
      * Initialize an empty DirectedGraph.
      * @return Graph<CustomVertex, CustomEdge>
@@ -55,7 +48,7 @@ public class GraphGenerator {
             CustomVertex buffer = dynamicNodes.get(i);
             for (CustomVertex node : dynamicNodes) {
                 if (!buffer.getId().equals(node.getId())) {
-                    if( new Random().nextDouble() <= 0.3 ) {
+                    if( new Random().nextDouble() <= 0.1 ) {
                         dynamicGraph.addEdge(buffer, node, new CustomEdge(true, 5));
                     }
                 }
@@ -65,7 +58,7 @@ public class GraphGenerator {
             List<CustomVertex> connectionsTo = Graphs.successorListOf(dynamicGraph, vertex);
             for(CustomVertex connection : connectionsTo) {
                 if(!Graphs.successorListOf(dynamicGraph, connection).contains(vertex)) {
-                    if(new Random().nextDouble() <= 0.3) {
+                    if(new Random().nextDouble() <= 0.1) {
                         dynamicGraph.addEdge(connection, vertex, new CustomEdge(true, 5));
                     }
                 }
@@ -80,67 +73,8 @@ public class GraphGenerator {
      * @param dynamicGraph - actual dynamic graph, where we make changes with the edges.
      */
     public void dynamicChange(Graph<CustomVertex, CustomEdge> dynamicGraph) {
-        CustomVertex firstVertex = pickRandomVertex(dynamicGraph);
-        CustomVertex secVertex = pickRandomVertex(dynamicGraph);
-        System.out.println("first id: " + firstVertex.getId() + " sec id: " + secVertex.getId() );
-        if(new Random().nextDouble() <= 0.75) {
-            if(firstVertex != null && secVertex != null) {
-                if(!firstVertex.getId().equals(secVertex.getId())) {
-                    if(Graphs.successorListOf(dynamicGraph, firstVertex).contains(secVertex) && Graphs.successorListOf(dynamicGraph, secVertex).contains(firstVertex)) {
-                        System.out.println("There is a edge between this two vertices.");
-                    } else if(!Graphs.successorListOf(dynamicGraph, firstVertex).contains(secVertex)) {
-                        Random random = new Random();
-                        dynamicGraph.addEdge(firstVertex, secVertex, new CustomEdge(false, this.actualTimeStamp + random.nextInt(10) + 1 ));
-                        System.out.println("Add Edge Change");
-                    }
-                }
-            }
-        }
-        RemoveEdgesByTimeStamp(dynamicGraph);
-
-        /*for(CustomVertex vertex: dynamicGraph.vertexSet()) {
-            System.out.println("Vertex id: " + vertex.getId() + " Degree num: " +  dynamicGraph.outDegreeOf(vertex));
-            System.out.println("Vertex id: " + vertex.getId() + " Edges to: " +  Graphs.successorListOf(dynamicGraph, vertex));
-        }*/
-
-        this.actualTimeStamp++;
-        System.out.println("Actual time: " + this.actualTimeStamp);
-    }
-
-    /**
-     * Pick a random vertex from the parameter graph.
-     * @param graph - graph, where we pick a random vertex
-     */
-    private CustomVertex pickRandomVertex(Graph<CustomVertex, CustomEdge> graph) {
-        CustomVertex result = null;
-        int size = graph.vertexSet().size();
-        int item = new Random().nextInt(size);
-        int i = 0;
-        for(CustomVertex vertex : graph.vertexSet())
-        {
-            if (i == item)
-                result = vertex;
-            i++;
-        }
-        return result;
-    }
-
-    /**
-     * Remove every edge, where the timeStamp expired.
-     * @param dynamicGraph - actual dynamic graph
-     */
-    private void RemoveEdgesByTimeStamp(Graph<CustomVertex, CustomEdge> dynamicGraph) {
-        ArrayList<CustomEdge> toRemove = new ArrayList<CustomEdge>();
-        for(CustomEdge edge: dynamicGraph.edgeSet()) {
-            if(!edge.getIsStatic() && edge.getTimeStamp() <= actualTimeStamp) {
-                toRemove.add(edge);
-                System.out.println("Delete Edge Change");
-            }
-        }
-        dynamicGraph.removeAllEdges(toRemove);
 
     }
-
     /**
      * Print informations about the graph -> graph nodes and graph edges, plus about the structure.
      * @param g - the graph where we would like to see the informations about that.

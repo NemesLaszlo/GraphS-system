@@ -33,4 +33,12 @@ public class CustomEdge extends DefaultEdge {
         return "(" + getIsStatic() + " : " + getTimeStamp() + "   " +  super.toString() +  ")";
     }
 
+    public CustomVertex getSource() {
+        return (CustomVertex)super.getSource();
+    }
+
+    public CustomVertex getTarget() {
+        return (CustomVertex)super.getTarget();
+    }
+
 }
