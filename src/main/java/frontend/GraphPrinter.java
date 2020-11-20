@@ -47,7 +47,6 @@ public class GraphPrinter extends JApplet {
 
     /**
      * Basic graph visualization with coloring and positioning.
-     * @param simulator - Simulator object with the simulation methods.
      */
     void regenerateGraphVisual() {
         // create a visualization using JGraph, via an adapter
@@ -77,7 +76,7 @@ public class GraphPrinter extends JApplet {
         mxCircleLayout layout = new mxCircleLayout(jgxAdapter);
 
         // center the circle
-        int radius = 300;
+        int radius = 500;
         layout.setRadius(radius);
         layout.setMoveCircle(true);
 

@@ -6,7 +6,7 @@ import java.util.List;
 
 public class HotpointEdge extends DefaultEdge {
 
-    private List<CustomVertex> path;
+    public List<CustomVertex> path;
 
     public HotpointEdge(List<CustomVertex> path) {
         this.path = path;

@@ -51,6 +51,7 @@ public class MainPanel {
                 int newValInteger = Integer.parseInt(newValString);
 
                 startNodeNum = newValInteger;
+                simulator.setActualTimeStamp(0);
                 simulator.createDynamicGraph(newValInteger);
                 graphPrinter.setG(simulator.getGraph());
                 //graphPrinter.SimulationInit(simulator, startNodeNum);

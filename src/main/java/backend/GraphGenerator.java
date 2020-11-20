@@ -37,33 +37,70 @@ public class GraphGenerator {
      * @param numberOfNodes - number of the nodes to create a graph structure.
      * @return Graph - Dynamic "CliqueGraph" structure, only the frame without dynamic change.
      */
-    public Graph<CustomVertex, CustomEdge> createDynamicGraph(int numberOfNodes){
+    public Graph<CustomVertex, CustomEdge> createDynamicGraph(int numberOfNodes, int graphHotpointThreshold){
         Graph<CustomVertex, CustomEdge> dynamicGraph = crateEmptyGraph();
         List<CustomVertex> dynamicNodes = createGraphNodes(numberOfNodes);
+        Map<CustomVertex,ArrayList<CustomVertex>> temp = new HashMap<>();
 
         for(CustomVertex node : dynamicNodes){
             dynamicGraph.addVertex(node);
         }
-        for(int i = 0; i < dynamicNodes.size(); ++i){
-            CustomVertex buffer = dynamicNodes.get(i);
-            for (CustomVertex node : dynamicNodes) {
-                if (!buffer.getId().equals(node.getId())) {
-                    if( new Random().nextDouble() <= 0.1 ) {
-                        dynamicGraph.addEdge(buffer, node, new CustomEdge(true, 5));
-                    }
+
+        for(CustomVertex node : dynamicNodes) {
+            ArrayList<CustomVertex> t = new ArrayList<>();
+            for (CustomVertex v : dynamicNodes) {
+                if (v != node) {
+                    t.add(v);
                 }
             }
+            temp.put(node,t);
         }
-        for(CustomVertex vertex : dynamicGraph.vertexSet()) {
-            List<CustomVertex> connectionsTo = Graphs.successorListOf(dynamicGraph, vertex);
-            for(CustomVertex connection : connectionsTo) {
-                if(!Graphs.successorListOf(dynamicGraph, connection).contains(vertex)) {
-                    if(new Random().nextDouble() <= 0.1) {
-                        dynamicGraph.addEdge(connection, vertex, new CustomEdge(true, 5));
-                    }
-                }
+        Random rand = new Random(1);
+
+        int basicEdges = 2*dynamicNodes.size();
+
+        for (int i=0;i<basicEdges;i++) {
+            CustomVertex start = dynamicNodes.get(rand.nextInt(dynamicNodes.size()));
+            dynamicGraph.addEdge(start,temp.get(start).remove(rand.nextInt(temp.get(start).size())),new CustomEdge(true, 5));
+        }
+
+        int hotPointCount = rand.nextInt(dynamicNodes.size()/5)+1;
+
+        for (int i=0;i<hotPointCount;i++) {
+            CustomVertex start = dynamicNodes.get(rand.nextInt(dynamicNodes.size()));
+            int max = Math.min(graphHotpointThreshold, temp.get(start).size());
+            System.out.println(start);
+            System.out.println(temp.get(start).size());
+            for (int j = 0; j < max;j++) {
+                dynamicGraph.addEdge(start,temp.get(start).remove(rand.nextInt(temp.get(start).size())),new CustomEdge(true, 5));
             }
         }
+
+
+
+//        double rarity = 0.05;
+
+
+//        for(int i = 0; i < dynamicNodes.size(); ++i){
+//            CustomVertex buffer = dynamicNodes.get(i);
+//            for (CustomVertex node : dynamicNodes) {
+//                if (!buffer.getId().equals(node.getId())) {
+//                    if( rand.nextDouble() <= rarity ) {
+//                        dynamicGraph.addEdge(buffer, node, new CustomEdge(true, 5));
+//                    }
+//                }
+//            }
+//        }
+//        for(CustomVertex vertex : dynamicGraph.vertexSet()) {
+//            List<CustomVertex> connectionsTo = Graphs.successorListOf(dynamicGraph, vertex);
+//            for(CustomVertex connection : connectionsTo) {
+//                if(!Graphs.successorListOf(dynamicGraph, connection).contains(vertex)) {
+//                    if(rand.nextDouble() <= rarity) {
+//                        dynamicGraph.addEdge(connection, vertex, new CustomEdge(true, 5));
+//                    }
+//                }
+//            }
+//        }
 
         return dynamicGraph;
     }
